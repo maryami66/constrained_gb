@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: gradient-boosting-constrained-optimization
+Version: 0.1
+Summary: constrained optimization for gradient boosting models with non-decomposable constraints
+Home-page: UNKNOWN
+Author: Maryam Bahrami
+Author-email: bahrami@uni-hildesheim.de
+License: MIT
+Description: This toolbox is for applying constrained optimization with gradient boosting model. It is written under Sklearn gradient boosting.
+        To see how it works, see the example folder, breast_cancer.py.
+        To see the provided constraints, see the "gradient_boosting_constrained_optimization" folder, _constraints.py
+Keywords: constrained optimization,gradient boosting
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
