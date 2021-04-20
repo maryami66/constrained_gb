@@ -12,7 +12,7 @@ with open(path.join(current_dir, 'requirements.txt'), 'r') as f:
     install_requires = f.read().split('\n')
 
 setup(
-      name='gradient_boosting_constrained_optimization',
+      name='constrained_gb',
       version='0.1',
       author='Maryam Bahrami',
       author_email='bahrami@uni-hildesheim.de',
@@ -21,7 +21,7 @@ setup(
       long_description_content_type="text/markdown",
       #url='http://github.com/storborg/funniest',
       license='MIT',
-      packages=['gradient_boosting_constrained_optimization'],
+      packages=['constrained_gb'],
       keywords='constrained optimization, gradient boosting',
       classifiers=[
               "Programming Language :: Python :: 3",
