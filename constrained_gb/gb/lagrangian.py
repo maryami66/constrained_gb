@@ -9,7 +9,7 @@ from scipy.special import expit
 from sklearn.tree._tree import TREE_LEAF
 from sklearn.ensemble._gb_losses import BinomialDeviance
 from sklearn.ensemble._gb_losses import LeastSquaresError
-import constrained_gb._utilities as utils
+from .utilities import _multiplier_multiplicative_update, _multiplier_additive_update, _multiplier_regular_update
 
 
 class ProxyLagrangianBinomialDeviance(BinomialDeviance):
@@ -112,7 +112,7 @@ class ProxyLagrangianBinomialDeviance(BinomialDeviance):
         # If update type is multiplicative, updates the Lagrange multipliers
         # and the multipliers distribution
         if self.update_type == 'multiplicative':
-            self.multipliers_distribution, self.multipliers = utils._multiplier_multiplicative_update(
+            self.multipliers_distribution, self.multipliers = _multiplier_multiplicative_update(
                 self.multipliers_distribution,
                 self.multipliers,
                 gradient_wrt_multiplier,
@@ -120,7 +120,7 @@ class ProxyLagrangianBinomialDeviance(BinomialDeviance):
 
         # If update type is additive, updates  only the Lagrange multipliers
         elif self.update_type == 'additive':
-            self.multipliers = utils._multiplier_additive_update(
+            self.multipliers = _multiplier_additive_update(
                     self.multipliers,
                     gradient_wrt_multiplier,
                     self.multiplier_stepsize,
@@ -291,7 +291,7 @@ class ProxyLagrangianLeastSquaresError(LeastSquaresError):
 
         # If update type is multiplicative, updates the Lagrange multipliers
         # and the multipliers distribution
-        self.multipliers = utils._multiplier_regular_update(
+        self.multipliers = _multiplier_regular_update(
             self.multipliers,
             gradient_wrt_multiplier,
             self.multiplier_stepsize,

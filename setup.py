@@ -13,14 +13,13 @@ with open(path.join(current_dir, 'requirements.txt'), 'r') as f:
 
 setup(
       name='constrained_gb',
-      version='0.1',
+      version='0.0.1',
       author='Maryam Bahrami',
-      author_email='bahrami@uni-hildesheim.de',
+      author_email='maryami_66@yahoo.com',
       description='constrained optimization for gradient boosting models with non-decomposable constraints',
       long_description=long_description,
       long_description_content_type="text/markdown",
-      #url='http://github.com/storborg/funniest',
-      license='MIT',
+      license='AGPLv3',
       packages=['constrained_gb'],
       keywords='constrained optimization, gradient boosting',
       classifiers=[

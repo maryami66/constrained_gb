@@ -1,4 +1,3 @@
-from __future__ import absolute_import
+from constrained_gb.gb.constraints import FalseNegativeRate, F1Measure, FalsePositiveRate
+from constrained_gb.gb.main import ConstrainedClassifier
 
-from ._constraints import *
-from .main import ConstrainedClassifier

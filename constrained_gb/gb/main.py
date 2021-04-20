@@ -12,8 +12,8 @@ from sklearn.ensemble._gb import BaseGradientBoosting
 from sklearn.ensemble._gb import GradientBoostingClassifier
 from sklearn.ensemble._gb import GradientBoostingRegressor
 from sklearn.dummy import DummyClassifier
-from constrained_gb.lagrangian import ProxyLagrangianBinomialDeviance
-from constrained_gb.lagrangian import ProxyLagrangianLeastSquaresError
+from .lagrangian import ProxyLagrangianBinomialDeviance
+from .lagrangian import ProxyLagrangianLeastSquaresError
 from constrained_gb.hyperparameter_optimization.bayesian_optimization import HyperParameterOptimization
 
 
