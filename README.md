@@ -12,7 +12,7 @@
   <p align="center">
     Constrained Optimization of Gradient Boosting models which is written on top of Sklearn gradient boosting.
     <br />
-    <a href="https://github.com/maryami66/constrained_gb/doc/build/html/index.html"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/maryami66/constrained_gb/doc/build/html/index"><strong>Explore the docs »</strong></a>
     <br />
     <br />
   </p>

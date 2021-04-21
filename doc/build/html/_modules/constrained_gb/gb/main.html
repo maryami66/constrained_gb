@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>constrained_gb.gb.main &#8212; constrained_gb 0.0.7.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="shortcut icon" type="image/png" href="../../../_static/py.png" />
+    
+    <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+    
+     
+
+  </head><body>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+    <li><img src="../../../_static/py.png" alt=""
+             style="vertical-align: middle; margin-top: -1px"/></li>
+    <li><a href="https://www.python.org/">Python</a> &#187;</li>
+    
+    <a href="../../../index.html">constrained_gb 0.0.7.1 documentation</a> &#187;
+    
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">constrained_gb.gb.main</a></li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../../../search.html" method="get">
+          <input placeholder="Quick search" type="text" name="q" />
+          <input type="submit" value="Go" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>    
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for constrained_gb.gb.main</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains &#39;ConstrainedGBM&#39; class.</span>
+
+<span class="sd">This method is a subclass of SKlearn gradient boosting classifier</span>
+
+<span class="sd">The Lagrangian serves as a loss function for gradient boosting classifier.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble._gb</span> <span class="kn">import</span> <span class="n">BaseGradientBoosting</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble._gb</span> <span class="kn">import</span> <span class="n">GradientBoostingClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble._gb</span> <span class="kn">import</span> <span class="n">GradientBoostingRegressor</span>
+<span class="kn">from</span> <span class="nn">sklearn.dummy</span> <span class="kn">import</span> <span class="n">DummyClassifier</span>
+<span class="kn">from</span> <span class="nn">.lagrangian</span> <span class="kn">import</span> <span class="n">ProxyLagrangianBinomialDeviance</span>
+<span class="kn">from</span> <span class="nn">.lagrangian</span> <span class="kn">import</span> <span class="n">ProxyLagrangianLeastSquaresError</span>
+<span class="kn">from</span> <span class="nn">constrained_gb.hyperparameter_optimization.bayesian_optimization</span> <span class="kn">import</span> <span class="n">HyperParameterOptimization</span>
+
+
+<span class="k">class</span> <span class="nc">BaseConstrainedGBM</span><span class="p">(</span><span class="n">BaseGradientBoosting</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract base class for Constrained Gradient Boosting which is</span>
+<span class="sd">    a subclass of SKlearn BaseGradientBoosting class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">multiplier_stepsize</span><span class="p">,</span> <span class="n">update_type</span><span class="p">,</span>
+                 <span class="n">multipliers_radius</span><span class="p">,</span> <span class="n">learning_rate</span><span class="p">,</span> <span class="n">n_estimators</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span>
+                 <span class="n">min_samples_split</span><span class="p">,</span> <span class="n">min_samples_leaf</span><span class="p">,</span> <span class="n">min_weight_fraction_leaf</span><span class="p">,</span> <span class="n">max_depth</span><span class="p">,</span>
+                 <span class="n">min_impurity_decrease</span><span class="p">,</span> <span class="n">min_impurity_split</span><span class="p">,</span> <span class="n">init</span><span class="p">,</span> <span class="n">subsample</span><span class="p">,</span> <span class="n">max_features</span><span class="p">,</span>
+                 <span class="n">ccp_alpha</span><span class="p">,</span> <span class="n">random_state</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">presort</span><span class="o">=</span><span class="s1">&#39;deprecated&#39;</span><span class="p">,</span> <span class="n">validation_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">n_iter_no_change</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiplier_stepsize</span> <span class="o">=</span> <span class="n">multiplier_stepsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">=</span> <span class="n">update_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multipliers_radius</span> <span class="o">=</span> <span class="n">multipliers_radius</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lagrangian</span> <span class="o">=</span> <span class="n">ProxyLagrangianBinomialDeviance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">multiplier_stepsize</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">multipliers_radius</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;constrained_deviance&#39;</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="n">min_samples_split</span><span class="p">,</span>
+            <span class="n">min_samples_leaf</span><span class="o">=</span><span class="n">min_samples_leaf</span><span class="p">,</span>
+            <span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="n">min_weight_fraction_leaf</span><span class="p">,</span>
+            <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span> <span class="n">subsample</span><span class="o">=</span><span class="n">subsample</span><span class="p">,</span>
+            <span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="n">max_leaf_nodes</span><span class="p">,</span>
+            <span class="n">min_impurity_decrease</span><span class="o">=</span><span class="n">min_impurity_decrease</span><span class="p">,</span>
+            <span class="n">min_impurity_split</span><span class="o">=</span><span class="n">min_impurity_split</span><span class="p">,</span>
+            <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span> <span class="n">presort</span><span class="o">=</span><span class="n">presort</span><span class="p">,</span>
+            <span class="n">validation_fraction</span><span class="o">=</span><span class="n">validation_fraction</span><span class="p">,</span>
+            <span class="n">n_iter_no_change</span><span class="o">=</span><span class="n">n_iter_no_change</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">ccp_alpha</span><span class="o">=</span><span class="n">ccp_alpha</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_check_params</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Loss &#39;constrained_deviance&#39; not supported. &quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">loss_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lagrangian</span>
+            <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;Loss &#39;constrained_lse&#39; not supported. &quot;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">loss_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lagrangian</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier_stepsize</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multiplier stepsize must be greater than 0 but &quot;</span>
+                             <span class="s2">&quot;was </span><span class="si">%r</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiplier_stepsize</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">optimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">hyper_parameters</span><span class="p">,</span> <span class="n">hyper_parameters_domain</span><span class="p">,</span>
+                 <span class="n">performance_measurement</span><span class="p">,</span> <span class="n">nb_folds</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">maximize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Hyper-parameter optimization of gradient boosting classifier,</span>
+<span class="sd">            using bayesian optimization.</span>
+<span class="sd">           It sets the hyper-parameters of the gradient boosting classifier</span>
+<span class="sd">           to optimum hyper-parameters.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        X: nd-array of shape (n_samples, n_features)</span>
+<span class="sd">            The input samples of the training set.</span>
+<span class="sd">        y: nd-array of shape (n_samples,)</span>
+<span class="sd">            The target values of the training set.</span>
+<span class="sd">        hyper_parameters: list of strings, default = None</span>
+<span class="sd">            The list of hyper-parameter that we desire to optimize. If None,</span>
+<span class="sd">            it optimizes the default_hyper_parameters list.</span>
+<span class="sd">        hyper_parameters_domain: list of tuples or lists, default = None</span>
+<span class="sd">            The list of hyper parameters domains that be correspondent with</span>
+<span class="sd">            hyper_parameters list. For integer and float hyper-parameters</span>
+<span class="sd">            we set a tuple or lower and upper bounds of the corresponding</span>
+<span class="sd">            hyper-parameter. But, for the string hyper-parameters such as</span>
+<span class="sd">            &#39;max_features&#39;, we set a list of possible ones.</span>
+<span class="sd">            If None, it optimizes the default_hyper_parameters_domain list.</span>
+<span class="sd">        performance_measurement: function, default = None</span>
+<span class="sd">            The evaluation metric that we desire to optimize the hyper-parameters</span>
+<span class="sd">            based on. If None, it maximizes f1_score.</span>
+<span class="sd">        nb_folds: integer, default = 5</span>
+<span class="sd">            The number of folds for k-fold cross validation.</span>
+<span class="sd">        max_iter: integer, default = 100</span>
+<span class="sd">            The maximum number of iterations for Bayesian Optimization</span>
+<span class="sd">        maximize: bool, default = False</span>
+<span class="sd">            If True, we minimize the -performance measurement.</span>
+<span class="sd">        random_state: integer, default = None</span>
+<span class="sd">            The random seed controller for the SKlearn KFold.</span>
+<span class="sd">        verbosity: bool, default = False</span>
+<span class="sd">            If True, print out the tryout values and the performance measurement.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">hp_opt</span> <span class="o">=</span> <span class="n">HyperParameterOptimization</span><span class="p">(</span><span class="n">gradient_boosting_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                                            <span class="n">hyper_parameters</span><span class="o">=</span><span class="n">hyper_parameters</span><span class="p">,</span>
+                                            <span class="n">hyper_parameters_domain</span><span class="o">=</span><span class="n">hyper_parameters_domain</span><span class="p">,</span>
+                                            <span class="n">performance_measurement</span><span class="o">=</span><span class="n">performance_measurement</span><span class="p">)</span>
+        <span class="n">optimized_parameters</span> <span class="o">=</span> <span class="n">hp_opt</span><span class="o">.</span><span class="n">optimize</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">max_iter</span><span class="o">=</span><span class="n">max_iter</span><span class="p">,</span> <span class="n">maximize</span><span class="o">=</span><span class="n">maximize</span><span class="p">,</span>
+                                               <span class="n">nb_folds</span><span class="o">=</span><span class="n">nb_folds</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+                                               <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_params</span><span class="p">(</span><span class="o">**</span><span class="n">optimized_parameters</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ConstrainedClassifier"><a class="viewcode-back" href="../../../reference/constrained_classifier.html#constrained_gb.ConstrainedClassifier">[docs]</a><span class="k">class</span> <span class="nc">ConstrainedClassifier</span><span class="p">(</span><span class="n">BaseConstrainedGBM</span><span class="p">,</span> <span class="n">GradientBoostingClassifier</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    constraints: list of rate </span>
+<span class="sd">    FNR : False Negative Rate upper bound</span>
+<span class="sd">    multiplier_stepsize : float, default=0.01</span>
+<span class="sd">        learning rate to update Lagrangian multiplier</span>
+<span class="sd">    radius: float, default=1.0</span>
+<span class="sd">        The radius of Lagrangian Multiplier space</span>
+<span class="sd">    multiplier_init: float, default=0.0</span>
+<span class="sd">        Initialized multiplier</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_SUPPORTED_LOSS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;constrained_deviance&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">multiplier_stepsize</span><span class="p">,</span> <span class="n">update_type</span><span class="o">=</span><span class="s1">&#39;multiplicative&#39;</span><span class="p">,</span>
+                 <span class="n">multipliers_radius</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">subsample</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s1">&#39;friedman_mse&#39;</span><span class="p">,</span>
+                 <span class="n">min_samples_split</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                 <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">min_impurity_decrease</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">min_impurity_split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">init</span><span class="o">=</span><span class="n">DummyClassifier</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;prior&#39;</span><span class="p">),</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">max_features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">presort</span><span class="o">=</span><span class="s1">&#39;deprecated&#39;</span><span class="p">,</span> <span class="n">validation_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">n_iter_no_change</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">ccp_alpha</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiplier_stepsize</span> <span class="o">=</span> <span class="n">multiplier_stepsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">=</span> <span class="n">update_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multipliers_radius</span> <span class="o">=</span> <span class="n">multipliers_radius</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lagrangian</span> <span class="o">=</span> <span class="n">ProxyLagrangianBinomialDeviance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">multiplier_stepsize</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">multipliers_radius</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">,</span> <span class="n">multiplier_stepsize</span><span class="o">=</span><span class="n">multiplier_stepsize</span><span class="p">,</span>
+            <span class="n">update_type</span><span class="o">=</span><span class="n">update_type</span><span class="p">,</span> <span class="n">multipliers_radius</span><span class="o">=</span><span class="n">multipliers_radius</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="n">min_samples_split</span><span class="p">,</span>
+            <span class="n">min_samples_leaf</span><span class="o">=</span><span class="n">min_samples_leaf</span><span class="p">,</span>
+            <span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="n">min_weight_fraction_leaf</span><span class="p">,</span>
+            <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span> <span class="n">subsample</span><span class="o">=</span><span class="n">subsample</span><span class="p">,</span>
+            <span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="n">max_leaf_nodes</span><span class="p">,</span>
+            <span class="n">min_impurity_decrease</span><span class="o">=</span><span class="n">min_impurity_decrease</span><span class="p">,</span>
+            <span class="n">min_impurity_split</span><span class="o">=</span><span class="n">min_impurity_split</span><span class="p">,</span>
+            <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span> <span class="n">presort</span><span class="o">=</span><span class="n">presort</span><span class="p">,</span>
+            <span class="n">validation_fraction</span><span class="o">=</span><span class="n">validation_fraction</span><span class="p">,</span>
+            <span class="n">n_iter_no_change</span><span class="o">=</span><span class="n">n_iter_no_change</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">ccp_alpha</span><span class="o">=</span><span class="n">ccp_alpha</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">ConstrainedRegressor</span><span class="p">(</span><span class="n">BaseConstrainedGBM</span><span class="p">,</span> <span class="n">GradientBoostingRegressor</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Gradient Boosting for regression.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_SUPPORTED_LOSS</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;constrained_lse&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">multiplier_stepsize</span><span class="p">,</span> <span class="n">update_type</span><span class="o">=</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span>
+                 <span class="n">multipliers_radius</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                 <span class="n">subsample</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">criterion</span><span class="o">=</span><span class="s1">&#39;friedman_mse&#39;</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">min_samples_leaf</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                 <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">min_impurity_decrease</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span>
+                 <span class="n">min_impurity_split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">max_features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">warm_start</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">presort</span><span class="o">=</span><span class="s1">&#39;deprecated&#39;</span><span class="p">,</span>
+                 <span class="n">validation_fraction</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">n_iter_no_change</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">ccp_alpha</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span> <span class="o">=</span> <span class="n">constraints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multiplier_stepsize</span> <span class="o">=</span> <span class="n">multiplier_stepsize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span> <span class="o">=</span> <span class="n">update_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">multipliers_radius</span> <span class="o">=</span> <span class="n">multipliers_radius</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lagrangian</span> <span class="o">=</span> <span class="n">ProxyLagrangianLeastSquaresError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">multiplier_stepsize</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">update_type</span><span class="p">,</span>
+                                                          <span class="bp">self</span><span class="o">.</span><span class="n">multipliers_radius</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">constraints</span><span class="o">=</span><span class="n">constraints</span><span class="p">,</span> <span class="n">multiplier_stepsize</span><span class="o">=</span><span class="n">multiplier_stepsize</span><span class="p">,</span>
+            <span class="n">update_type</span><span class="o">=</span><span class="n">update_type</span><span class="p">,</span> <span class="n">multipliers_radius</span><span class="o">=</span><span class="n">multipliers_radius</span><span class="p">,</span>
+            <span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">,</span> <span class="n">n_estimators</span><span class="o">=</span><span class="n">n_estimators</span><span class="p">,</span>
+            <span class="n">criterion</span><span class="o">=</span><span class="n">criterion</span><span class="p">,</span> <span class="n">min_samples_split</span><span class="o">=</span><span class="n">min_samples_split</span><span class="p">,</span>
+            <span class="n">min_samples_leaf</span><span class="o">=</span><span class="n">min_samples_leaf</span><span class="p">,</span>
+            <span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="n">min_weight_fraction_leaf</span><span class="p">,</span>
+            <span class="n">max_depth</span><span class="o">=</span><span class="n">max_depth</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">,</span> <span class="n">subsample</span><span class="o">=</span><span class="n">subsample</span><span class="p">,</span>
+            <span class="n">max_features</span><span class="o">=</span><span class="n">max_features</span><span class="p">,</span>
+            <span class="n">min_impurity_decrease</span><span class="o">=</span><span class="n">min_impurity_decrease</span><span class="p">,</span>
+            <span class="n">min_impurity_split</span><span class="o">=</span><span class="n">min_impurity_split</span><span class="p">,</span>
+            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+            <span class="n">max_leaf_nodes</span><span class="o">=</span><span class="n">max_leaf_nodes</span><span class="p">,</span> <span class="n">warm_start</span><span class="o">=</span><span class="n">warm_start</span><span class="p">,</span>
+            <span class="n">presort</span><span class="o">=</span><span class="n">presort</span><span class="p">,</span> <span class="n">validation_fraction</span><span class="o">=</span><span class="n">validation_fraction</span><span class="p">,</span>
+            <span class="n">n_iter_no_change</span><span class="o">=</span><span class="n">n_iter_no_change</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">ccp_alpha</span><span class="o">=</span><span class="n">ccp_alpha</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+    <li><img src="../../../_static/py.png" alt=""
+             style="vertical-align: middle; margin-top: -1px"/></li>
+    <li><a href="https://www.python.org/">Python</a> &#187;</li>
+    
+    <a href="../../../index.html">constrained_gb 0.0.7.1 documentation</a> &#187;
+    
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">constrained_gb.gb.main</a></li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../../../search.html" method="get">
+          <input placeholder="Quick search" type="text" name="q" />
+          <input type="submit" value="Go" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>  
+    <div class="footer">
+    &copy; <a href="../../../copyright.html">Copyright</a> .
+    <br />
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br />
+    <br />
+
+    Last updated on None.
+    
+    <br />
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Constraints &#8212; constrained_gb 0.0.7.1 documentation</title>
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Constrained Classifier" href="constrained_classifier.html" />
+    <link rel="shortcut icon" type="image/png" href="../_static/py.png" />
+    
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    
+     
+
+  </head><body>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="constrained_classifier.html" title="Constrained Classifier"
+             accesskey="P">previous</a> |</li>
+    <li><img src="../_static/py.png" alt=""
+             style="vertical-align: middle; margin-top: -1px"/></li>
+    <li><a href="https://www.python.org/">Python</a> &#187;</li>
+    
+    <a href="../index.html">constrained_gb 0.0.7.1 documentation</a> &#187;
+    
+
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Constrained Gradient Boosting Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Constraints</a></li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" type="text" name="q" />
+          <input type="submit" value="Go" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>    
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="constraints">
+<h1>Constraints<a class="headerlink" href="#constraints" title="Permalink to this headline">¶</a></h1>
+<section id="id1">
+<h2>Constraints<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="constrained_gb.FalseNegativeRate">
+<em class="property">class </em><code class="sig-prename descclassname">constrained_gb.</code><code class="sig-name descname">FalseNegativeRate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">block_bound</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/constrained_gb/gb/constraints.html#FalseNegativeRate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#constrained_gb.FalseNegativeRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">constrained_gb.gb.constraints.Constraints</span></code></p>
+<dl class="py method">
+<dt id="constrained_gb.FalseNegativeRate.first_penalty">
+<code class="sig-name descname">first_penalty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">predictions</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/constrained_gb/gb/constraints.html#FalseNegativeRate.first_penalty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#constrained_gb.FalseNegativeRate.first_penalty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the proxy constraint penalty for first order.
+Parameters
+———-
+y : ndarray of shape (n_samples,)</p>
+<blockquote>
+<div><p>The target labels.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>raw_predictions<span class="classifier">nd-array of shape (n_samples,)</span></dt><dd><p>The raw predictions (i.e. values from the tree leaves) of the
+tree ensemble at iteration <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">-</span> <span class="pre">1</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="constrained_gb.FalseNegativeRate.second_penalty">
+<code class="sig-name descname">second_penalty</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tree</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/constrained_gb/gb/constraints.html#FalseNegativeRate.second_penalty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#constrained_gb.FalseNegativeRate.second_penalty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Constraints</a><ul>
+<li><a class="reference internal" href="#id1">Constraints</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="constrained_classifier.html"
+                        title="previous chapter">Constrained Classifier</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/constraints.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="constrained_classifier.html" title="Constrained Classifier"
+             >previous</a> |</li>
+    <li><img src="../_static/py.png" alt=""
+             style="vertical-align: middle; margin-top: -1px"/></li>
+    <li><a href="https://www.python.org/">Python</a> &#187;</li>
+    
+    <a href="../index.html">constrained_gb 0.0.7.1 documentation</a> &#187;
+    
+
+          <li class="nav-item nav-item-1"><a href="index.html" >Constrained Gradient Boosting Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Constraints</a></li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" type="text" name="q" />
+          <input type="submit" value="Go" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>  
+    <div class="footer">
+    &copy; <a href="../copyright.html">Copyright</a> .
+    <br />
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br />
+    <br />
+
+    Last updated on None.
+    
+    <br />
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+
+  </body>
+</html>

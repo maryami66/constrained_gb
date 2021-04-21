@@ -1,0 +1,321 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>constrained_gb.gb.constraints &#8212; constrained_gb 0.0.7.1 documentation</title>
+    <link rel="stylesheet" href="../../../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="shortcut icon" type="image/png" href="../../../_static/py.png" />
+    
+    <script type="text/javascript" src="../../../_static/copybutton.js"></script>
+    
+     
+
+  </head><body>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+    <li><img src="../../../_static/py.png" alt=""
+             style="vertical-align: middle; margin-top: -1px"/></li>
+    <li><a href="https://www.python.org/">Python</a> &#187;</li>
+    
+    <a href="../../../index.html">constrained_gb 0.0.7.1 documentation</a> &#187;
+    
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">constrained_gb.gb.constraints</a></li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../../../search.html" method="get">
+          <input placeholder="Quick search" type="text" name="q" />
+          <input type="submit" value="Go" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>    
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for constrained_gb.gb.constraints</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains proxy constraints for non-decomposable constraints</span>
+
+<span class="sd">When the original constraint is defined with &#39;g(y_true, y_pred) - a &lt;= 0&#39;, </span>
+<span class="sd">wherein g(y_true, y_pred) is a rate metric or a function of several rate metrics,</span>
+<span class="sd">then the proxy constraint is</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABCMeta</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">expit</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble._gb_losses</span> <span class="kn">import</span> <span class="n">BinomialDeviance</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+<span class="kn">from</span> <span class="nn">constrained_gb.metrics.binary_rates</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">loss</span> <span class="o">=</span> <span class="n">BinomialDeviance</span><span class="p">(</span><span class="n">n_classes</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Constraints</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Abstract base class for various constraints.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    block_bound : float</span>
+<span class="sd">        upper bound or lower bound for the constraints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_bound</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span> <span class="o">=</span> <span class="n">block_bound</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">raw_predictions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the measure.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        y : nd-array of shape (n_samples,)</span>
+<span class="sd">            True labels.</span>
+<span class="sd">        raw_predictions : nd-array of shape (n_samples,)</span>
+<span class="sd">            The prediction of the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">first_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">raw_predictions</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the proxy constraint penalty for first order.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        y : ndarray of shape (n_samples,)</span>
+<span class="sd">            The target labels.</span>
+<span class="sd">        raw_predictions : nd-array of shape (n_samples,)</span>
+<span class="sd">            The raw predictions (i.e. values from the tree leaves) of the</span>
+<span class="sd">            tree ensemble at iteration ``i - 1``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">second_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># Compute residual predictions to feed into the penalty function</span>
+        <span class="n">residual_predictions</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_penalty</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">residual_predictions</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="FalseNegativeRate"><a class="viewcode-back" href="../../../reference/constraints.html#constrained_gb.FalseNegativeRate">[docs]</a><span class="k">class</span> <span class="nc">FalseNegativeRate</span><span class="p">(</span><span class="n">Constraints</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_bound</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">block_bound</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span> <span class="o">=</span> <span class="n">block_bound</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">raw_predictions</span><span class="p">):</span>
+        <span class="c1"># Returns false negative rate for given labels and predictions.</span>
+        <span class="n">pred_proba</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">_raw_prediction_to_proba</span><span class="p">(</span><span class="n">raw_predictions</span><span class="p">)</span>
+        <span class="n">decision</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">FNR</span> <span class="o">=</span> <span class="n">false_negative</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">decision</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">FNR</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span>
+
+<div class="viewcode-block" id="FalseNegativeRate.first_penalty"><a class="viewcode-back" href="../../../reference/constraints.html#constrained_gb.FalseNegativeRate.first_penalty">[docs]</a>    <span class="k">def</span> <span class="nf">first_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">):</span>
+        <span class="n">pred_proba</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">_raw_prediction_to_proba</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+        <span class="n">false_negatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="n">y</span><span class="p">,</span>
+                                         <span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">false_positives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="n">y</span><span class="p">,</span>
+                                         <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">~</span><span class="n">false_negatives</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">false_positives</span><span class="p">)</span>
+
+        <span class="n">penalty</span> <span class="o">=</span> <span class="n">expit</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span> <span class="o">/</span> <span class="n">denominator</span>
+        <span class="k">return</span> <span class="n">penalty</span></div>
+
+<div class="viewcode-block" id="FalseNegativeRate.second_penalty"><a class="viewcode-back" href="../../../reference/constraints.html#constrained_gb.FalseNegativeRate.second_penalty">[docs]</a>    <span class="k">def</span> <span class="nf">second_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># Compute residual predictions to feed into the penalty function</span>
+        <span class="n">residual_predictions</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_penalty</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">residual_predictions</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">FalsePositiveRate</span><span class="p">(</span><span class="n">Constraints</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_bound</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">block_bound</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span> <span class="o">=</span> <span class="n">block_bound</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">raw_predictions</span><span class="p">):</span>
+        <span class="c1"># Returns false negative rate for given labels and predictions.</span>
+        <span class="n">pred_proba</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">_raw_prediction_to_proba</span><span class="p">(</span><span class="n">raw_predictions</span><span class="p">)</span>
+        <span class="n">decision</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">FPR</span> <span class="o">=</span> <span class="n">false_positive</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">decision</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span> <span class="o">-</span> <span class="n">FPR</span>
+
+    <span class="k">def</span> <span class="nf">first_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">):</span>
+        <span class="n">pred_proba</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">_raw_prediction_to_proba</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+        <span class="n">false_negatives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="n">y</span><span class="p">,</span>
+                                         <span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">false_positives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="n">y</span><span class="p">,</span>
+                                         <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">false_negatives</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">~</span><span class="n">false_positives</span><span class="p">)</span>
+
+        <span class="n">penalty</span> <span class="o">=</span> <span class="o">-</span> <span class="n">expit</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span> <span class="o">/</span> <span class="n">denominator</span>
+        <span class="k">return</span> <span class="n">penalty</span>
+
+    <span class="k">def</span> <span class="nf">second_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># Compute residual predictions to feed into the penalty function</span>
+        <span class="n">residual_predictions</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_penalty</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">residual_predictions</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">F1Measure</span><span class="p">(</span><span class="n">Constraints</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_bound</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">block_bound</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span> <span class="o">=</span> <span class="n">block_bound</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">raw_predictions</span><span class="p">):</span>
+        <span class="c1">#  = 2 * (precision * recall) / (precision + recall)</span>
+        <span class="n">pred_proba</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">_raw_prediction_to_proba</span><span class="p">(</span><span class="n">raw_predictions</span><span class="p">)</span>
+        <span class="n">decision</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span> <span class="o">-</span> <span class="n">metrics</span><span class="o">.</span><span class="n">f1_score</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">decision</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">first_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">):</span>
+        <span class="n">pred_proba</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">_raw_prediction_to_proba</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+        <span class="n">false_positives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="n">y</span><span class="p">,</span>
+                                         <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">true_positives</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_proba</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">y</span><span class="p">,</span>
+                                        <span class="n">y</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">true_positives</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">false_positives</span><span class="p">)</span>
+        <span class="n">penalty</span> <span class="o">=</span> <span class="n">expit</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span> <span class="o">/</span> <span class="n">denominator</span>
+        <span class="k">return</span> <span class="n">penalty</span>
+
+    <span class="k">def</span> <span class="nf">second_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># Compute residual predictions to feed into the penalty function</span>
+        <span class="n">residual_predictions</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_penalty</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">residual_predictions</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ExponentialLoss</span><span class="p">(</span><span class="n">Constraints</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_bound</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">block_bound</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span> <span class="o">=</span> <span class="n">block_bound</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">raw_predictions</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span> <span class="o">*</span> <span class="n">raw_predictions</span><span class="p">))</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span>
+
+    <span class="k">def</span> <span class="nf">first_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">):</span>
+        <span class="n">y_</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mf">2.</span> <span class="o">*</span> <span class="n">y</span> <span class="o">-</span> <span class="mf">1.</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">y_</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">y_</span> <span class="o">*</span> <span class="n">predictions</span><span class="o">.</span><span class="n">ravel</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">second_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># Compute residual predictions to feed into the penalty function</span>
+        <span class="n">residual_predictions</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_penalty</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">residual_predictions</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ErrorRate</span><span class="p">(</span><span class="n">Constraints</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block_bound</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">block_bound</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span> <span class="o">=</span> <span class="n">block_bound</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">raw_predictions</span><span class="p">):</span>
+        <span class="c1">#  = fp+fn / (fp+tp+fn+tn)</span>
+        <span class="n">pred_probs</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">_raw_prediction_to_proba</span><span class="p">(</span><span class="n">raw_predictions</span><span class="p">)</span>
+        <span class="n">decision</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">signed_labels</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">signed_labels</span> <span class="o">*</span> <span class="n">decision</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_bound</span>
+
+    <span class="k">def</span> <span class="nf">first_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">predictions</span><span class="p">):</span>
+        <span class="n">penalty</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">predictions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">pred_probs</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">_raw_prediction_to_proba</span><span class="p">(</span><span class="n">predictions</span><span class="p">)</span>
+        <span class="n">penalty</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">pred_probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">!=</span> <span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">penalty</span>
+
+    <span class="k">def</span> <span class="nf">second_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="c1"># Compute residual predictions to feed into the penalty function</span>
+        <span class="n">residual_predictions</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_penalty</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">residual_predictions</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+    <li><img src="../../../_static/py.png" alt=""
+             style="vertical-align: middle; margin-top: -1px"/></li>
+    <li><a href="https://www.python.org/">Python</a> &#187;</li>
+    
+    <a href="../../../index.html">constrained_gb 0.0.7.1 documentation</a> &#187;
+    
+
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">constrained_gb.gb.constraints</a></li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../../../search.html" method="get">
+          <input placeholder="Quick search" type="text" name="q" />
+          <input type="submit" value="Go" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>  
+    <div class="footer">
+    &copy; <a href="../../../copyright.html">Copyright</a> .
+    <br />
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br />
+    <br />
+
+    Last updated on None.
+    
+    <br />
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+
+  </body>
+</html>

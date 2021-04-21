@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Constrained Classifier &#8212; constrained_gb 0.0.7.1 documentation</title>
+    <link rel="stylesheet" href="../_static/pydoctheme.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Constraints" href="constraints.html" />
+    <link rel="prev" title="Constrained Gradient Boosting Documentation" href="index.html" />
+    <link rel="shortcut icon" type="image/png" href="../_static/py.png" />
+    
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+    
+     
+
+  </head><body>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="constraints.html" title="Constraints"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Constrained Gradient Boosting Documentation"
+             accesskey="P">previous</a> |</li>
+    <li><img src="../_static/py.png" alt=""
+             style="vertical-align: middle; margin-top: -1px"/></li>
+    <li><a href="https://www.python.org/">Python</a> &#187;</li>
+    
+    <a href="../index.html">constrained_gb 0.0.7.1 documentation</a> &#187;
+    
+
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Constrained Gradient Boosting Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Constrained Classifier</a></li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" type="text" name="q" />
+          <input type="submit" value="Go" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>    
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="constrained-classifier">
+<h1>Constrained Classifier<a class="headerlink" href="#constrained-classifier" title="Permalink to this headline">¶</a></h1>
+<section id="constrainedclassifier">
+<h2>ConstrainedClassifier<a class="headerlink" href="#constrainedclassifier" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="constrained_gb.ConstrainedClassifier">
+<em class="property">class </em><code class="sig-prename descclassname">constrained_gb.</code><code class="sig-name descname">ConstrainedClassifier</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">constraints</span></em>, <em class="sig-param"><span class="n">multiplier_stepsize</span></em>, <em class="sig-param"><span class="n">update_type</span><span class="o">=</span><span class="default_value">'multiplicative'</span></em>, <em class="sig-param"><span class="n">multipliers_radius</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">learning_rate</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">n_estimators</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">subsample</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">criterion</span><span class="o">=</span><span class="default_value">'friedman_mse'</span></em>, <em class="sig-param"><span class="n">min_samples_split</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">min_samples_leaf</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">min_weight_fraction_leaf</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">max_depth</span><span class="o">=</span><span class="default_value">3</span></em>, <em class="sig-param"><span class="n">min_impurity_decrease</span><span class="o">=</span><span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">min_impurity_split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">init</span><span class="o">=</span><span class="default_value">DummyClassifier(strategy='prior')</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">max_features</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">max_leaf_nodes</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">warm_start</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">presort</span><span class="o">=</span><span class="default_value">'deprecated'</span></em>, <em class="sig-param"><span class="n">validation_fraction</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">n_iter_no_change</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">tol</span><span class="o">=</span><span class="default_value">0.0001</span></em>, <em class="sig-param"><span class="n">ccp_alpha</span><span class="o">=</span><span class="default_value">0.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/constrained_gb/gb/main.html#ConstrainedClassifier"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#constrained_gb.ConstrainedClassifier" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">constrained_gb.gb.main.BaseConstrainedGBM</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">sklearn.ensemble._gb.GradientBoostingClassifier</span></code></p>
+<p>constraints: list of rate 
+FNR : False Negative Rate upper bound
+multiplier_stepsize : float, default=0.01</p>
+<blockquote>
+<div><p>learning rate to update Lagrangian multiplier</p>
+</div></blockquote>
+<dl class="simple">
+<dt>radius: float, default=1.0</dt><dd><p>The radius of Lagrangian Multiplier space</p>
+</dd>
+<dt>multiplier_init: float, default=0.0</dt><dd><p>Initialized multiplier</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Constrained Classifier</a><ul>
+<li><a class="reference internal" href="#constrainedclassifier">ConstrainedClassifier</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Constrained Gradient Boosting Documentation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="constraints.html"
+                        title="next chapter">Constraints</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/constrained_classifier.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>  
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="constraints.html" title="Constraints"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Constrained Gradient Boosting Documentation"
+             >previous</a> |</li>
+    <li><img src="../_static/py.png" alt=""
+             style="vertical-align: middle; margin-top: -1px"/></li>
+    <li><a href="https://www.python.org/">Python</a> &#187;</li>
+    
+    <a href="../index.html">constrained_gb 0.0.7.1 documentation</a> &#187;
+    
+
+          <li class="nav-item nav-item-1"><a href="index.html" >Constrained Gradient Boosting Documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Constrained Classifier</a></li>
+    <li class="right">
+        
+
+    <div class="inline-search" style="display: none" role="search">
+        <form class="inline-search" action="../search.html" method="get">
+          <input placeholder="Quick search" type="text" name="q" />
+          <input type="submit" value="Go" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+    </div>
+    <script type="text/javascript">$('.inline-search').show(0);</script>
+         |
+    </li>
+
+      </ul>
+    </div>  
+    <div class="footer">
+    &copy; <a href="../copyright.html">Copyright</a> .
+    <br />
+
+    The Python Software Foundation is a non-profit corporation.
+<a href="https://www.python.org/psf/donations/">Please donate.</a>
+<br />
+    <br />
+
+    Last updated on None.
+    
+    <br />
+
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.2.
+    </div>
+
+  </body>
+</html>
