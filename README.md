@@ -139,7 +139,7 @@ Use this space to show useful examples of how a project can be used. Additional 
 <!-- LICENSE -->
 ## License
 
-Distributed under the GNU AFFERO GENERAL PUBLIC LICENSE License. See `LICENSE` for more information.
+Distributed under the GNU AFFERO GENERAL PUBLIC LICENSE License v3 or later (GPLv3+). See `LICENSE` for more information.
 
 
 

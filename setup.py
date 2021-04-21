@@ -19,7 +19,7 @@ setup(
     author_email='maryami_66@yahoo.com',
     packages=['constrained_gb'],
     url='https://github.com/maryami66/constrained_gb',
-    license='AGPLv3',
+    license='GNU General Public License v3 or later (GPLv3+)',
     description='constrained optimization for gradient boosting models with non-decomposable constraints',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -28,7 +28,7 @@ setup(
     keywords='constrained optimization, gradient boosting',
     classifiers=[
         "Programming Language :: Python :: 3.6",
-        "License :: OSI Approved :: AGPLv3s License",
+        "License :: OSI Approved :: GNU General Public License (GPLv3)",
         "Operating System :: OS Independent"
     ],
     python_requires='>=3.6'
