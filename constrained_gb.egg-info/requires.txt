@@ -1,0 +1,7 @@
+scikit-learn>=0.22.0
+sklean
+GPyOpt
+numpy<2.0,>=1.18.5
+scipy>=1.4.1
+matplotlib>=3.2.1
+future
