@@ -24,7 +24,7 @@ parms = {'constraints': constraints,
          'random_state': 2
          }
 
-clf = constrained_gb.ConstrainedClassifier(**parms)
+clf = gbmco.ConstrainedClassifier(**parms)
 clf.fit(X_train, y_train)
 
 test_predictions = clf.predict(X_test)

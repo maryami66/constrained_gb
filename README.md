@@ -100,6 +100,41 @@ If you have problem with `GPyOpt` installation visit [here](https://sheffieldml.
 In this example, we are looking for a classifier to 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
+   ```sh
+   import constrained_gb as gbmco
+   from sklearn.datasets import load_breast_cancer
+   from sklearn.model_selection import train_test_split
+   from sklearn.metrics import *
+
+   X, y = load_breast_cancer(return_X_y=True)
+
+   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.5, random_state=2)
+    
+    
+   constraints = [gbmco.FalseNegativeRate(0.001)]
+    
+   parms = {'constraints': constraints,
+            'multiplier_stepsize': 0.01,
+            'learning_rate': 0.1,
+            'min_samples_split': 99,
+            'min_samples_leaf': 19,
+            'max_depth': 8,
+            'max_leaf_nodes': None,
+            'min_weight_fraction_leaf': 0.0,
+            'n_estimators': 300,
+            'max_features': 'sqrt',
+            'subsample': 0.7,
+            'random_state': 2
+            }
+    
+   clf = gbmco.ConstrainedClassifier(**parms)
+   clf.fit(X_train, y_train)
+    
+   test_predictions = clf.predict(X_test)
+    
+   print("Test F1 Measure: {} \n".format(f1_score(y_test, test_predictions)))
+   print("Test FNR: {} \n".format(1-recall_score(y_test, test_predictions)))
+   ```
 
 <!-- LICENSE -->
 ## License
@@ -119,10 +154,10 @@ Project Link: [https://github.com/maryami66/constrained_gb](https://github.com/y
 
 <!-- ACKNOWLEDGEMENTS -->
 ## Acknowledgements
-* My master thesis supervisor at Bosch center of AI research, Andreas Steimer
-* My master thesis supervisor at Hildesheim University, Andreas Steimer
-* My professor at Hildesheim University,
-* My friend at BCAI, , who guided me for hyper-parameter optimization with Bayesian Optimization.
+* My master thesis supervisor at Bosch center of AI research, [Andreas Steimer](https://www.linkedin.com/in/andreas-steimer-phd-8a519b88/)
+* My master thesis supervisor at Hildesheim University, [Lukas Brinkmeyer](https://www.ismll.uni-hildesheim.de/personen/brinkmeyer.html)
+* My professor at Hildesheim University, [Prof. Lars Schmidt-Thieme](https://www.ismll.uni-hildesheim.de/personen/lst.html)
+* My friend at BCAI, Damir Shakirov, who guided me for hyper-parameter optimization with Bayesian Optimization.
 * [Img Shields](https://shields.io)
 * [Best-README-Template](https://github.com/othneildrew/Best-README-Template)
 
