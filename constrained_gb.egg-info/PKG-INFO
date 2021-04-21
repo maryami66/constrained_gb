@@ -184,7 +184,7 @@ Description: [![MIT License][license-shield]][license-url]
 Keywords: constrained optimization,gradient boosting
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3.6
-Classifier: License :: OSI Approved :: GNU General Public License (GPLv3)
+Classifier: License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
