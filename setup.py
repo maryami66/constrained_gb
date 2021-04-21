@@ -11,21 +11,25 @@ with open("README.md", "r") as fh:
 with open(path.join(current_dir, 'requirements.txt'), 'r') as f:
     install_requires = f.read().split('\n')
 
+
 setup(
-      name='constrained_gb',
-      version='0.0.1',
-      author='Maryam Bahrami',
-      author_email='maryami_66@yahoo.com',
-      description='constrained optimization for gradient boosting models with non-decomposable constraints',
-      long_description=long_description,
-      long_description_content_type="text/markdown",
-      license='AGPLv3',
-      packages=['constrained_gb'],
-      keywords='constrained optimization, gradient boosting',
-      classifiers=[
-              "Programming Language :: Python :: 3",
-              "License :: OSI Approved :: MIT License",
-              "Operating System :: OS Independent"
-              ],
-      python_requires='>=3.6'
-      )
+    name='constrained_gb',
+    version='0.0.4',
+    author='Maryam Bahrami',
+    author_email='maryami_66@yahoo.com',
+    packages=['constrained_gb'],
+    url='https://github.com/maryami66/constrained_gb',
+    license='AGPLv3',
+    description='constrained optimization for gradient boosting models with non-decomposable constraints',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    setup_requires='numpy',
+    install_requires=install_requires,
+    keywords='constrained optimization, gradient boosting',
+    classifiers=[
+        "Programming Language :: Python :: 3.6",
+        "License :: OSI Approved :: AGPLv3s License",
+        "Operating System :: OS Independent"
+    ],
+    python_requires='>=3.6'
+)
