@@ -1,4 +1,4 @@
-[![Python Version][python-shield]][python-url]
+[![Python][python-shield]][python-url]
 [![Documentation][documentation-shield]][documentation-url]
 [![Github][github-shield]][github-url]
 [![MIT License][license-shield]][license-url]
@@ -170,14 +170,13 @@ Project Link: [https://github.com/maryami66/constrained_gb](https://github.com/y
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[python-shield]]: https://img.shields.io/badge/python-v3.7-blue
+[python-shield]: https://img.shields.io/badge/Python-v3.7-blue
 [python-url]: https://www.python.org/downloads/release/python-370/
-[documentation-shield]]: https://img.shields.io/badge/docs-passing-brightgreen
+[documentation-shield]: https://img.shields.io/badge/docs-passing-brightgreen
 [documentation-url]: https://github.com/maryami66/constrained_gb/doc/build/html/index.html
-[github-shield]]: https://img.shields.io/badge/status-stable-brightgreen
+[github-shield]: https://img.shields.io/badge/status-stable-brightgreen
 [github-url]: https://github.com/maryami66/constrained_gb
 [license-shield]: https://img.shields.io/badge/LICENCE-GPLv3%2B-green
 [license-url]: https://github.com/maryami66/constrained_gb/blob/main/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/maryam-bahrami-a6558496/
-[product-screenshot]: images/screenshot.png
