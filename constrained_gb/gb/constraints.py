@@ -159,6 +159,7 @@ class ExponentialLoss(Constraints, metaclass=ABCMeta):
         residual_predictions = tree.predict(X)
         return self.first_penalty(y, residual_predictions)
 
+
 class ErrorRate(Constraints, metaclass=ABCMeta):
     def __init__(self, block_bound):
         super().__init__(block_bound)

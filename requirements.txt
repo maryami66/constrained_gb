@@ -1,5 +1,4 @@
 scikit-learn>=0.22.0
-sklean
 GPyOpt
 numpy>=1.18.5,<2.0
 scipy>=1.4.1

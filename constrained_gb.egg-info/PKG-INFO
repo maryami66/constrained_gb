@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: constrained-gb
-Version: 0.0.4
+Version: 0.0.7.1
 Summary: constrained optimization for gradient boosting models with non-decomposable constraints
 Home-page: https://github.com/maryami66/constrained_gb
 Author: Maryam Bahrami
