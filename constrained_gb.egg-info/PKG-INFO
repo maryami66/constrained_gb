@@ -5,7 +5,7 @@ Summary: constrained optimization for gradient boosting models with non-decompos
 Home-page: https://github.com/maryami66/constrained_gb
 Author: Maryam Bahrami
 Author-email: maryami_66@yahoo.com
-License: AGPLv3
+License: GNU General Public License v3 or later (GPLv3+)
 Description: [![MIT License][license-shield]][license-url]
         [![LinkedIn][linkedin-shield]][linkedin-url]
         
@@ -147,7 +147,7 @@ Description: [![MIT License][license-shield]][license-url]
         <!-- LICENSE -->
         ## License
         
-        Distributed under the GNU AFFERO GENERAL PUBLIC LICENSE License. See `LICENSE` for more information.
+        Distributed under the GNU AFFERO GENERAL PUBLIC LICENSE License v3 or later (GPLv3+). See `LICENSE` for more information.
         
         
         
@@ -184,7 +184,7 @@ Description: [![MIT License][license-shield]][license-url]
 Keywords: constrained optimization,gradient boosting
 Platform: UNKNOWN
 Classifier: Programming Language :: Python :: 3.6
-Classifier: License :: OSI Approved :: AGPLv3s License
+Classifier: License :: OSI Approved :: GNU General Public License (GPLv3)
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
