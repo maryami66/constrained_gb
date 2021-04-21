@@ -1,12 +1,15 @@
 Metadata-Version: 2.1
 Name: constrained-gb
-Version: 0.0.7.1
+Version: 0.1.0
 Summary: constrained optimization for gradient boosting models with non-decomposable constraints
 Home-page: https://github.com/maryami66/constrained_gb
 Author: Maryam Bahrami
 Author-email: maryami_66@yahoo.com
 License: GNU General Public License v3 or later (GPLv3+)
-Description: [![MIT License][license-shield]][license-url]
+Description: [![Python][python-shield]][python-url]
+        [![Documentation][documentation-shield]][documentation-url]
+        [![Github][github-shield]][github-url]
+        [![MIT License][license-shield]][license-url]
         [![LinkedIn][linkedin-shield]][linkedin-url]
         
         
@@ -17,7 +20,7 @@ Description: [![MIT License][license-shield]][license-url]
           <p align="center">
             Constrained Optimization of Gradient Boosting models which is written on top of Sklearn gradient boosting.
             <br />
-            <a href="https://github.com/maryami66/constrained_gb"><strong>Explore the docs Â»</strong></a>
+            <a href="https://github.com/maryami66/constrained_gb/doc/build/html/index"><strong>Explore the docs Â»</strong></a>
             <br />
             <br />
           </p>
@@ -175,11 +178,16 @@ Description: [![MIT License][license-shield]][license-url]
         
         <!-- MARKDOWN LINKS & IMAGES -->
         <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-        [license-shield]: https://img.shields.io/badge/LICENCE-AGPL-green
+        [python-shield]: https://img.shields.io/badge/Python-v3.7-blue
+        [python-url]: https://www.python.org/downloads/release/python-370/
+        [documentation-shield]: https://img.shields.io/badge/docs-passing-brightgreen
+        [documentation-url]: https://github.com/maryami66/constrained_gb/doc/build/html/index.html
+        [github-shield]: https://img.shields.io/badge/status-stable-brightgreen
+        [github-url]: https://github.com/maryami66/constrained_gb
+        [license-shield]: https://img.shields.io/badge/LICENCE-GPLv3%2B-green
         [license-url]: https://github.com/maryami66/constrained_gb/blob/main/LICENSE
         [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
         [linkedin-url]: https://www.linkedin.com/in/maryam-bahrami-a6558496/
-        [product-screenshot]: images/screenshot.png
         
 Keywords: constrained optimization,gradient boosting
 Platform: UNKNOWN

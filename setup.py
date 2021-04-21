@@ -30,7 +30,7 @@ with open(path.join(current_dir, 'requirements.txt'), 'r') as f:
 
 setup(
     name='constrained_gb',
-    version='0.0.7.1',
+    version='0.1.0',
     author='Maryam Bahrami',
     author_email='maryami_66@yahoo.com',
     packages=['constrained_gb'],
