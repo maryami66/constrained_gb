@@ -1,2 +1,1 @@
-from constrained_gb import gg
-
+from constrained_gb import gb
