@@ -1,6 +1,0 @@
-scikit-learn>=0.22.0
-GPyOpt
-numpy==1.19.3
-scipy>=1.4.1
-matplotlib>=3.2.1
-future
